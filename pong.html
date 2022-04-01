@@ -1,0 +1,119 @@
+<canvas width="600" height="400"></canvas>
+
+<script type="text/javascript">
+	//instanciando API WEB AUDIO
+	const AudioContext = window.AudioContext || window.webkitAudioContext;
+
+	const audioContext = new AudioContext();
+	//****************************
+
+	var oscilador = audioContext.createOscillator();
+	oscilador,type = 'sine';
+	oscilador.connect(audioContext.destination);
+	oscilador.start();
+
+	var tela = document.querySelector('canvas');
+	var pincel = tela.getContext('2d');
+	pincel.fillStyle = 'black';
+	pincel.fillRect(0,0,600,400);
+
+	function desenhaCirculo(x, y) {
+		pincel.fillStyle = 'white';
+		pincel.beginPath();
+		pincel.arc(x, y, 10, 0, 2 * Math.PI);
+		pincel.fill();
+	}
+
+	function desenhaRaquete(yr, xr){ //!!!!
+		pincel.fillStyle = 'white';
+		pincel.fillRect(xr, yr, 11, 60);
+		console.log(xr, yr);
+	}
+
+	function limpaTela(){
+		pincel.clearRect(0,0,600,400);
+		pincel.fillStyle = 'black';
+		pincel.fillRect(0,0,600,400);
+	}
+
+	var x = 300;
+	var y = 200;
+	var yl;
+	var cx = false;
+	var cy = false;
+
+
+	function atualizaTela(i, j){
+		limpaTela();
+		desenhaCirculo(x, y);
+
+		verificaR1();
+
+		verificaR2();	
+
+
+		(x + 10) == 600 ? (cx = true) : cx; //somando + raio (10) a x o ponto de colisão passa a ser na borada do circulo e não no ponto central, fazendo com que a bola pare de entrar na parede!
+		(x - 5) == 5 ? (cx = false) : cx;
+		cx == false ? x++ : x--;
+		(y + 10) == 400 ? (cy = true) : cy;
+		(y - 5) == 5 ? ( cy = false) : cy;
+		cy == false ? y++ : y--;
+		var yl = y;
+
+		//console.log(yl);
+		//console.log(x);
+
+		console.log('x = ' + x + ' y = ' + y);
+		console.log(yl)
+
+		//desenhaRaquete(yr, 10);
+		desenhaRaquete(yl - 30, 580);
+		
+
+	}
+
+	var yr = 170;
+	var taxa = 20; // velocidade da raquete
+
+	function leDoTeclado(evento) {
+        
+        switch(evento.key){
+            case 'ArrowUp':
+            	if(yr > 0){
+            		yr = yr - taxa;
+            	}
+                
+                limpaTela();
+                atualizaTela(yr);
+                break;
+            case 'ArrowDown':
+            	if((yr + 60) < 400){
+            		yr = yr + taxa;
+            	}
+                
+                limpaTela();
+                atualizaTela(yr);
+                break;
+        }
+    }
+
+    function verificaR1(){
+    	if(x >= 10 && x <= 22 && y >= yr && y <= (yr + 60)){
+			cx = !cx;
+		}
+		return cx;
+    }
+
+    function verificaR2(){
+    	if((x + 10) >= 580 && (x + 10) <= 591 && y >= (yl - 35) && y <= ((yl - 35) + 60)){
+			cx = !cx;
+		}
+		return cx;
+		alert("")
+    }
+
+	setInterval(atualizaTela, 5); //velocidade da bolinha e chamada constante do atualiza tela
+
+   	document.onkeydown = leDoTeclado; // leitura do teclado e atualização da raquete
+
+</script>
